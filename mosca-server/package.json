@@ -1,0 +1,23 @@
+{
+  "name": "mosca-mqtt-server",
+  "version": "1.0.0",
+  "description": "Basic Mosca MQTT server with authentication",
+  "main": "mosca_server.js",
+  "scripts": {
+    "start": "node mosca_server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "mosca",
+    "mqtt",
+    "iot"
+  ],
+  "author": "Gabriel Natucci",
+  "license": "MIT",
+  "dependencies": {
+    "jsonwebtoken": "^8.2.1",
+    "mosca": "^2.8.1",
+    "request": "^2.87.0"
+  },
+  "private": false
+}
