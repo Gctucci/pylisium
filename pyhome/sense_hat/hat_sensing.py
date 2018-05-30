@@ -11,7 +11,7 @@ import sys
 
 # Includes packages in parent directory
 sys.path.append(os.path.dirname(os.getcwd()))
-from py_common import auth0_handlers as auth0
+from common import auth0_handlers as auth0
 
 def load_env(fname=".env", sep="=="):
     logger = logging.getLogger()
