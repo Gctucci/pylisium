@@ -15,6 +15,7 @@
   "author": "Gabriel Natucci",
   "license": "MIT",
   "dependencies": {
+    "auth0mosca": "^0.1.0",
     "jsonwebtoken": "^8.2.1",
     "mosca": "^2.8.1",
     "request": "^2.87.0"
