@@ -2,7 +2,22 @@ var mosca = require('mosca')
 var Auth0Mosca = require('auth0mosca');
 
 var settings = {
-  port: 1883,
+  port: 4883,
+  stats: true, // publish stats in the $SYS/<id> topicspace
+  logger: {
+    level: 'info'
+  },
+  backend: {
+    type: 'redis',
+    port: 6379,
+    host: 'localhost',
+    return_buffers: true
+  },
+  persistence: {
+    factory: mosca.persistence.Redis,
+    port: 6379,
+    host: 'localhost'
+  }
 };
 
 //'Devices' is a Database connection where all devices are registered.
@@ -31,3 +46,8 @@ function setup() {
 server.on('clientConnected', function(client) {
   console.log('New connection: ', client.id );
 });
+
+// fired when a client disconnects
+server.on('clientDisconnected', function(client) {
+  console.log('Client Disconnected:', client.id);
+  });
