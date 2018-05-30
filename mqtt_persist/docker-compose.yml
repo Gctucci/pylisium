@@ -6,7 +6,11 @@ services:
     build: .
     ports:
       - "5000:5000"
-  redis:
+  influxdb:
     env_file:
       - .env
     image: "influxdb:alpine"
+  grafana:
+    env_file:
+      - .env
+      image: "grafana:latest"
