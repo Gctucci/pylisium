@@ -10,13 +10,13 @@ var settings = {
   backend: {
     type: 'redis',
     port: 6379,
-    host: 'localhost',
+    host: process.env.REDIS_HOST || 'localhost',
     return_buffers: true
   },
   persistence: {
     factory: mosca.persistence.Redis,
     port: 6379,
-    host: 'localhost'
+    host:  process.env.REDIS_HOST || 'localhost'
   }
 };
 
