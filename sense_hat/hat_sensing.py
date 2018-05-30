@@ -5,9 +5,13 @@ import numpy as np
 import time
 import uuid
 from datetime import datetime as dt
-from py_common import auth0_handlers as auth0
 from threading import Timer
 import os
+import sys
+
+# Includes packages in parent directory
+sys.path.append(os.path.dirname(os.getcwd()))
+from py_common import auth0_handlers as auth0
 
 def load_env(fname=".env", sep="=="):
     logger = logging.getLogger()

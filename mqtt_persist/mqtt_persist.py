@@ -2,9 +2,12 @@ import logging
 import uuid
 import paho.mqtt.client as mqtt
 import os
+import sys
 from influxdb import InfluxDBClient
-from py_common import auth0_handlers as auth0
 from threading import Timer
+# Includes packages in parent directory
+sys.path.append(os.path.dirname(os.getcwd()))
+from py_common import auth0_handlers as auth0
 
 # The callback for when the client receives a CONNACK response from the server.
 def on_connect(client, userdata, flags, rc):
