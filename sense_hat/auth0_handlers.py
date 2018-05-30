@@ -12,7 +12,7 @@ LOGGER.setLevel(logging.INFO)
 
 def get_token(uri_conn, client_id, client_secret, audience, max_retries=5):
     logger = logging.getLogger()
-
+    uri_conn = uri_conn.split("//")[-1]
     conn = http.client.HTTPSConnection(uri_conn)
     payload = "{\"client_id\":\"%s\",\"client_secret\":\"%s\",\"audience\":\"%s\",\"grant_type\":\"client_credentials\"}"%(client_id, client_secret, audience)
 
