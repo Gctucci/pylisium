@@ -15,5 +15,5 @@ RUN yarn install
 # Bundle app source
 COPY . .
 
-EXPOSE 9999
+EXPOSE 1883
 CMD [ "npm", "start" ]
