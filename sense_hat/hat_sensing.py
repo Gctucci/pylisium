@@ -16,7 +16,7 @@ def load_env(fname=".env", sep="=="):
             envs = line.split(sep)
             if len(envs) >= 2:
                 logger.info("Setting env variable %s", line)
-                os.environ[envs[0]] = envs[-1]
+                os.environ[envs[0]] = envs[-1].strip("\n")
 
 
 # The callback for when the client receives a CONNACK response from the server.
@@ -26,7 +26,7 @@ def on_connect(client, userdata, flags, rc):
 
     # Subscribing in on_connect() means that if we lose the connection and
     # reconnect then subscriptions will be renewed.
-    client.subscribe("pylisium/home/%s/control"%(client.id))
+    client.subscribe("pylisium/home/%s/control"%(client._client_id))
 
 def on_disconnect(client, userdata, rc):
     logger = logging.getLogger()
@@ -98,12 +98,13 @@ if __name__ == "__main__":
     client.on_connect = on_connect
     client.on_message = on_message
     client.on_disconnect = on_disconnect
+    token = get_auth_token()
+    client.username_pw_set(username="JWT",password=os.environ.get("MQTT_ACCESS_TOKEN"))
     client.connect(os.environ.get("MQTT_BROKER_HOST"), int(os.environ.get("MQTT_BROKER_PORT")), 60)
     client.loop_start()
     # Access the Rpi Hat for getting the sensors
     sense = SenseHat()
     sense.clear()
-    token = get_auth_token()
     try:
         while True:
             auth = {"username": "JWT", "password": os.environ.get("MQTT_ACCESS_TOKEN")}
