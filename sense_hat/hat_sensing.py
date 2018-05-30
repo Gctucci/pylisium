@@ -6,7 +6,18 @@ import time
 import uuid
 from datetime import datetime as dt
 import auth0_handlers as auth0
+from threading import Timer
 import os
+
+def load_env(fname=".env", sep="=="):
+    logger = logging.getLogger()
+    with open(fname, "r") as f:
+        for line in f.readlines():
+            envs = line.split(sep)
+            if len(envs) >= 2:
+                logger.info("Setting env variable %s", line)
+                os.environ[envs[0]] = envs[-1]
+
 
 # The callback for when the client receives a CONNACK response from the server.
 def on_connect(client, userdata, flags, rc):
@@ -55,44 +66,55 @@ def create_measurement():
     ]
     return meas
 
-if __name__ == "__main__":
-    # Initializes default python logger
-    FORMAT = '[%(levelname)s] %(asctime)s - %(message)s'
-    logging.basicConfig(format=FORMAT)
-    LOGGER = logging.getLogger()
-    LOGGER.setLevel(logging.INFO)
-    # Initializes the MQTT client
-    client_id = uuid.uuid4()
-    client = mqtt.Client(client_id=client_id)
-    client.on_connect = on_connect
-    client.on_message = on_message
-    client.on_disconnect = on_disconnect
-    client.connect("iot.pylisium.com", 1883, 60)
-    client.loop_start()
-    # Access the Rpi Hat for getting the sensors
-    sense = SenseHat()
-    sense.clear()
-    # Tries to get a valid JWT
+def get_auth_token():
     token = auth0.get_token(
         os.environ.get("AUTH0_URI"),
         os.environ.get("AUTH0_CLIENT_ID"),
         os.environ.get("AUTH0_CLIENT_SECRET"),
         os.environ.get("AUTH0_AUDIENCE")
     )
+    # Tries to get a valid JWT
     if token is not None:
-        auth = {"username": "JWT", "password": token["access_token"]}
+        os.environ["MQTT_ACCESS_TOKEN"]  = token["access_token"]
+        if "expires_in" in token.keys():
+            # Set a timer to renew the token
+            renew_token = Timer(int(token["expires_in"]), get_auth_token)
+            renew_token.start()
     else:
-        auth = {"username": "JWT", "password": "mqtt"}
+        os.environ["MQTT_ACCESS_TOKEN"]  = "mqtt"
+    return token
+
+
+if __name__ == "__main__":
+    load_env()
+    # Initializes default python logger
+    FORMAT = '[%(levelname)s] %(asctime)s - %(message)s'
+    logging.basicConfig(format=FORMAT)
+    LOGGER = logging.getLogger()
+    LOGGER.setLevel(logging.INFO)
+    # Initializes the MQTT client
+    client_id = str(uuid.uuid4())
+    client = mqtt.Client(client_id=client_id)
+    client.on_connect = on_connect
+    client.on_message = on_message
+    client.on_disconnect = on_disconnect
+    client.connect(os.environ.get("MQTT_BROKER_HOST"), int(os.environ.get("MQTT_BROKER_PORT")), 60)
+    client.loop_start()
+    # Access the Rpi Hat for getting the sensors
+    sense = SenseHat()
+    sense.clear()
+    token = get_auth_token()
     try:
         while True:
-
+            auth = {"username": "JWT", "password": os.environ.get("MQTT_ACCESS_TOKEN")}
             meas = create_measurement()
             client.publish(
                 topic="pylisium/home/%s/environment"%(client_id),
                 payload=meas,
                 qos=2,
                 client_id=client_id,
-                auth=auth)
+                auth=auth
+            )
             time.sleep(1)
     except KeyboardInterrupt:
         print("Stopping script...")
