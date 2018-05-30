@@ -2,7 +2,7 @@ var mosca = require('mosca')
 var Auth0Mosca = require('auth0mosca');
 
 var settings = {
-  port: 4883,
+  port: 1883,
   stats: true, // publish stats in the $SYS/<id> topicspace
   logger: {
     level: 'info'
@@ -10,13 +10,13 @@ var settings = {
   backend: {
     type: 'redis',
     port: 6379,
-    host: process.env.REDIS_HOST || 'localhost',
+    host: 'redis',
     return_buffers: true
   },
   persistence: {
     factory: mosca.persistence.Redis,
     port: 6379,
-    host:  process.env.REDIS_HOST || 'localhost'
+    host:  'redis'
   }
 };
 

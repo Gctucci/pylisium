@@ -5,7 +5,7 @@ services:
       - .env
     build: .
     ports:
-      - "4883:4883"
+      - "1883:1883"
     networks:
       - broker-net
     depends_on:
