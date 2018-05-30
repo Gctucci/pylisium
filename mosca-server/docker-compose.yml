@@ -6,7 +6,15 @@ services:
     build: .
     ports:
       - "4883:4883"
+    networks:
+      - broker-net
+    depends_on:
+      - redis
   redis:
     image: "redis:alpine"
     ports:
       - "6379:6379"
+    networks:
+      - broker-net
+networks:
+  broker-net:
