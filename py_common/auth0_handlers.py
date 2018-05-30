@@ -28,6 +28,7 @@ def get_token(uri_conn, client_id, client_secret, audience, max_retries=5):
             logger.info("Got response: %s", data.decode("utf-8"))
             return json.loads(data.decode("utf-8"))
         except Exception as e:
+            print(e)
             logger.warning("Could not connect to Auth API, trying again...")
             retries += 1
             # Sleeps for an amount equivalent to the number of retries

@@ -5,7 +5,7 @@ import numpy as np
 import time
 import uuid
 from datetime import datetime as dt
-import auth0_handlers as auth0
+from py_common import auth0_handlers as auth0
 from threading import Timer
 import os
 
