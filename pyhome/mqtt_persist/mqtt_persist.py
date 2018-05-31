@@ -40,7 +40,7 @@ def connect_database():
         client.create_retention_policy('expiry_policy', os.environ.get("INFLUXDB_RETENTION"), 1)
         logger.info("Created retention policy!")
     except Exception as e:
-        print(e)
+        logger.error(e)
         logger.warning("Error while trying to connect to database")
     return client
 
