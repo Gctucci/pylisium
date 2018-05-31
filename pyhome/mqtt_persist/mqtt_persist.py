@@ -31,12 +31,12 @@ def connect_database():
         host=os.environ.get('INFLUXDB_HOST'),
         port=int(os.environ.get('INFLUXDB_PORT')),
         username=os.environ.get('INFLUXDB_USER'),
-        password=os.environ.get('INFLUXDB_USER_PASSWORD')
+        password=os.environ.get('INFLUXDB_USER_PASSWORD'),
+        database=os.environ.get('INFLUXDB_DB'),
+        timeout=60
         )
     logger.info("Connected to InfluxDB database...")
     try:
-        client.create_database('environment')
-        logger.info("Created measurement table!")
         client.create_retention_policy('expiry_policy', os.environ.get("INFLUXDB_RETENTION"), 1)
         logger.info("Created retention policy!")
     except Exception as e:
