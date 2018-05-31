@@ -32,8 +32,7 @@ def connect_database():
         port=int(os.environ.get('INFLUXDB_PORT')),
         username=os.environ.get('INFLUXDB_USER'),
         password=os.environ.get('INFLUXDB_USER_PASSWORD'),
-        database=os.environ.get('INFLUXDB_DB'),
-        timeout=60
+        database=os.environ.get('INFLUXDB_DB')
         )
     logger.info("Connected to InfluxDB database...")
     try:
