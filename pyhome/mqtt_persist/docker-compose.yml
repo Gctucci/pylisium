@@ -19,7 +19,8 @@ services:
     ports:
       - "8086:8086"
     restart: always
-    volumes: ['influxdb:/var/lib/influxdb']
+    volumes:
+      - influxdb-data:/var/lib/influxdb
     networks:
       - grafana-net
 
@@ -37,3 +38,5 @@ services:
 
 networks:
   grafana-net:
+volumes:
+  redis-data:
