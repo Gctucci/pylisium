@@ -61,6 +61,3 @@ def validate_token(api_path, token={}, max_retries=5):
                 # Sleeps for an amount equivalent to the number of retries
                 time.sleep(1*math.pow(retries, 0.5))
     return None
-get_token("pylisium.auth0.com", "6sbknlPRs2cIirnzrQwkfA3rlCwTPuhx",
-    "exdtYmWp-uGIxa8McipEaXTrgnmKk3Iu4pq8ic7fZa40IvNZXN6bAJ0Q-eob0iXn",
-    "https://iot.broker.pylisium.com")
