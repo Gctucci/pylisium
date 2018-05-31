@@ -18,6 +18,7 @@ services:
     image: "influxdb:alpine"
     ports:
       - "8086:8086"
+      - "8083:8083"
     restart: always
     volumes:
       - influxdb-data:/var/lib/influxdb
@@ -39,4 +40,4 @@ services:
 networks:
   grafana-net:
 volumes:
-  redis-data:
+  influxdb-data:
