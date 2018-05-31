@@ -2,6 +2,7 @@ import logging
 import uuid
 import paho.mqtt.client as mqtt
 import os
+import time
 from influxdb import InfluxDBClient
 from threading import Timer
 import auth0_handlers as auth0
@@ -27,21 +28,27 @@ def on_message(client, userdata, message, db_client):
 
 def connect_database():
     logger = logging.getLogger()
-    client = InfluxDBClient(
-        host=os.environ.get('INFLUXDB_HOST'),
-        port=int(os.environ.get('INFLUXDB_PORT')),
-        username=os.environ.get('INFLUXDB_USER'),
-        password=os.environ.get('INFLUXDB_USER_PASSWORD'),
-        database=os.environ.get('INFLUXDB_DB'),
-        timeout=60
-        )
-    logger.info("Connected to InfluxDB database...")
-    try:
-        client.create_retention_policy('expiry_policy', os.environ.get("INFLUXDB_RETENTION"), 1)
-        logger.info("Created retention policy!")
-    except Exception as e:
-        logger.error(e)
-        logger.warning("Error while trying to connect to database")
+    retries = 0
+    client = None
+    while retries < 5:
+        client = InfluxDBClient(
+            host=os.environ.get('INFLUXDB_HOST'),
+            port=int(os.environ.get('INFLUXDB_PORT')),
+            username=os.environ.get('INFLUXDB_USER'),
+            password=os.environ.get('INFLUXDB_USER_PASSWORD'),
+            database=os.environ.get('INFLUXDB_DB'),
+            timeout=60
+            )
+        logger.info("Connected to InfluxDB database...")
+        try:
+            client.create_retention_policy('expiry_policy', os.environ.get("INFLUXDB_RETENTION"), 1)
+            logger.info("Created retention policy!")
+        except Exception as e:
+            logger.error(e)
+            logger.warning("Error while trying to connect to database. Trying again..")
+            retries += 1
+            # Sleeps for an amount equivalent to the number of retries
+            time.sleep(1*math.pow(retries, 0.5))
     return client
 
 def get_auth_token():
