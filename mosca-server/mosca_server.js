@@ -1,5 +1,5 @@
 var mosca = require('mosca')
-var Auth0Mosca = require('auth0mosca');
+var Auth0Mosca = require('./auth0mqtt');
 
 var settings = {
   port: 1883,
