@@ -14,3 +14,4 @@ RTIMULib==7.2.1
 SecretStorage==2.3.1
 sense-hat==2.2.0
 six==1.10.0
+geocoder==1.38.1

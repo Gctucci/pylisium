@@ -12,6 +12,7 @@ import json
 import threading
 import queue
 
+
 def load_env(fname=".env", sep="=="):
     logger = logging.getLogger()
     with open(fname, "r") as f:
@@ -21,6 +22,18 @@ def load_env(fname=".env", sep="=="):
                 logger.info("Setting env variable %s", line)
                 os.environ[envs[0]] = envs[-1].strip("\n")
 
+
+def get_weather():
+    import requests
+    import geocoder
+    logger = logging.getLogger()
+    # Find the lat and lon from ip
+    g = geocoder.ip('me')
+    coord = g.latlng
+    api_addr = os.environ.get('WEATHER_API') + "&lat=%s&lon=%s"%(coord[0], coord[1]) + "&units=metrics"
+    resp = requests.get(api_addr).json()
+    logger.info("Got weather response: %s", resp)
+    return resp
 
 # The callback for when the client receives a CONNACK response from the server.
 def on_connect(client, userdata, flags, rc):
@@ -62,7 +75,15 @@ def get_reading():
         }
 
 def create_measurement():
+    weather = get_weather()
     reading = get_reading()
+    weather_data = {
+        "temperature": weather["main"]["temp"],
+        "humidity": weather["main"]["humidity"],
+        "pressure": weather["main"]["pressure"],
+        "wind": weather["wind"]["speed"],
+        "cloud": weather["clouds"]["all"]
+    }
     meas = [
         {
             "measurement": "environment",
@@ -72,6 +93,15 @@ def create_measurement():
             },
             "time": dt.utcnow().isoformat(),
             "fields": reading
+        },
+        {
+            "measurement": "weather",
+            "tags": {
+                "device_type": "sense_hat",
+                "device_id": os.environ.get("DEVICE_ID")
+            },
+            "time": dt.utcnow().isoformat(),
+            "fields": weather_data
         }
     ]
     return meas
@@ -97,7 +127,7 @@ def get_auth_token():
 def display_text(sense):
     global CUR_MEAS
     while True:
-        temp_msg = "Temp.: %s"%(round(CUR_MEAS[0]["fields"]["humidity"], 1))
+        temp_msg = "Temp.: %s"%(round(CUR_MEAS[0]["fields"]["temperature"], 1))
         hum_msg = "Hum.: %s"%(round(CUR_MEAS[0]["fields"]["humidity"], 1))
         sense.show_message( temp_msg + " - " + hum_msg)
         sense.clear()
