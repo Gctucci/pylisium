@@ -46,6 +46,7 @@ def get_reading():
     return {
         "pressure": pressure,
         "temperature": float(temp_press + temp_hum) / 2,
+        "humidity": sense.get_humidity(),
         "acceleration_x": acc["x"],
         "acceleration_y": acc["y"],
         "acceleration_z": acc["z"],
