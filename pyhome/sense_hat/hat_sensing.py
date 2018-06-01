@@ -10,6 +10,7 @@ import os
 import auth0_handlers as auth0
 import json
 import threading
+import queue
 
 def load_env(fname=".env", sep="=="):
     logger = logging.getLogger()
@@ -94,16 +95,38 @@ def get_auth_token():
     return token
 
 def display_text(sense):
-    global TEMP, HUM
+    global CUR_MEAS
     while True:
-        temp_msg = "T:%s"%(round(TEMP, 1))
-        hum_msg = "H:%s"%(round(HUM, 1))
+        temp_msg = "Temp.: %s"%(round(CUR_MEAS[0]["fields"]["humidity"], 1))
+        hum_msg = "Hum.: %s"%(round(CUR_MEAS[0]["fields"]["humidity"], 1))
         sense.show_message( temp_msg + " - " + hum_msg, scroll_speed=(0.04))
         sense.clear()
         time.sleep(1)
 
+def send_data(client, topic):
+    global MEASUREMENTS
+    logger = logging.getLogger()
+    logger.info("Start publishing on topic %s", topic)
+    client.loop_start()
+    while True:
+        item = MEASUREMENTS.get()
+        if item is None:
+            logger.info("Measurement queue is empty")
+        else:
+            client.publish(
+                topic=str(topic),
+                payload=json.dumps(item)
+            )
+            logger.info("Published data: %s", item)
+            MEASUREMENTS.task_done()
+            time.sleep(1)
+
+
 if __name__ == "__main__":
-    global TEMP, HUM
+    global CUR_MEAS
+    global MEASUREMENTS
+    MEASUREMENTS = queue.Queue()
+    CUR_MEAS = [{"fields": {"temperature": 0, "humidity": 0}}]
     load_env()
     # Initializes default python logger
     FORMAT = '[%(levelname)s] %(asctime)s - %(message)s'
@@ -121,29 +144,25 @@ if __name__ == "__main__":
     client.username_pw_set(username="JWT",password=os.environ.get("MQTT_ACCESS_TOKEN"))
     client.connect_async(os.environ.get("MQTT_BROKER_HOST"), int(os.environ.get("MQTT_BROKER_PORT")))
     topic = "".join(["pylisium/home/environment/", client_id])
-    LOGGER.info("Start publishing on topic %s", topic)
-    client.loop_start()
     # Access the Rpi Hat for getting the sensors
     sense = SenseHat()
     sense.low_light = True
     sense.clear()
     thread_display = threading.Thread(target=display_text, args=(sense, ) )
+    thread_mqtt = threading.Thread(target=send_data, args=(client, topic, ) )
     thread_display.start()
+    thread_mqtt.start()
     try:
         while True:
             auth = {"username": "JWT", "password": os.environ.get("MQTT_ACCESS_TOKEN")}
             meas = create_measurement()
-            TEMP = meas[0]["fields"]["temperature"]
-            HUM = meas[0]["fields"]["humidity"]
-            client.publish(
-                topic=str(topic),
-                payload=json.dumps(meas)
-            )
-            LOGGER.info("Published data: %s", meas)
+            MEASUREMENTS.put(meas)
+            CUR_MEAS = meas
             time.sleep(1)
     except KeyboardInterrupt:
         print("Stopping script...")
         sense.clear()
         client.loop_stop()
         client.disconnect()
-        thread_display.join()
+        thread_display.join(timeout=5)
+        thread_mqtt.join(timeout=5)
