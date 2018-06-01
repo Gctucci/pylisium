@@ -90,7 +90,7 @@ Auth0Mosca.prototype.authenticateWithCredentials = function () {
 
 Auth0Mosca.prototype.authorizePublish = function () {
     return function (client, topic, payload, callback) {
-        if (client.deviceProfile !== undefined) {
+        if (client.deviceProfile.topics !== undefined) {
             callback(null, client.deviceProfile && client.deviceProfile.topics && client.deviceProfile.topics.indexOf(topic) > -1);
         } else {
             callback(null, topic.toString().indexOf(client.id.toString()) > -1);
