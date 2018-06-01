@@ -78,11 +78,12 @@ def create_measurement():
     weather = get_weather()
     reading = get_reading()
     weather_data = {
-        "temperature": weather["main"]["temp"],
-        "humidity": weather["main"]["humidity"],
+        "temperature": float(weather["main"]["temp"]),
+        "humidity": float(weather["main"]["humidity"]),
         "pressure": weather["main"]["pressure"],
-        "wind": weather["wind"]["speed"],
-        "cloud": weather["clouds"]["all"]
+        "wind": float(weather["wind"]["speed"]),
+        "cloud": weather["clouds"]["all"],
+        "city": weather["name"]
     }
     meas = [
         {
