@@ -36,7 +36,13 @@ def connect_database():
         )
     logger.info("Connected to InfluxDB database...")
     try:
-        client.create_retention_policy('expiry_policy', os.environ.get("INFLUXDB_RETENTION"), 1)
+        client.create_retention_policy(
+            'expiry_policy',
+            str(os.environ.get("INFLUXDB_RETENTION")),
+            1,
+            os.environ.get('INFLUXDB_DB'),
+            True
+        )
         logger.info("Created retention policy!")
     except Exception as e:
         logger.error(e)
