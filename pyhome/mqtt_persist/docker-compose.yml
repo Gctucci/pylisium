@@ -43,6 +43,6 @@ networks:
   grafana-net:
   my-broker-net:
     external:
-      name: broker-net
+      name: moscaserver_broker-net
 volumes:
   influxdb-data:

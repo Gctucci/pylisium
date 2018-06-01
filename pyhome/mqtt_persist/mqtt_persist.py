@@ -13,7 +13,7 @@ def on_connect(client, userdata, flags, rc):
 
     # Subscribing in on_connect() means that if we lose the connection and
     # reconnect then subscriptions will be renewed.
-    client.subscribe("pylisium/home/#/environment")
+    client.subscribe("pylisium/home/environment/#", qos=2)
 
 def on_disconnect(client, userdata, rc):
     logger = logging.getLogger()
