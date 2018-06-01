@@ -27,7 +27,7 @@ def on_connect(client, userdata, flags, rc):
 
     # Subscribing in on_connect() means that if we lose the connection and
     # reconnect then subscriptions will be renewed.
-    client.subscribe("".join("pylisium/home/", client._client_id.decode("utf-8"), "/control"))
+    client.subscribe("".join(["pylisium/home/", client._client_id.decode("utf-8"), "/control"]))
 
 def on_disconnect(client, userdata, rc):
     logger = logging.getLogger()
@@ -113,7 +113,7 @@ if __name__ == "__main__":
             auth = {"username": "JWT", "password": os.environ.get("MQTT_ACCESS_TOKEN")}
             meas = create_measurement()
             client.publish(
-                topic="".join("pylisium/home/", client_id, "/environment"),
+                topic="".join(["pylisium/home/", client_id, "/environment"]),
                 payload=json.dumps(meas),
                 qos=2
             )
