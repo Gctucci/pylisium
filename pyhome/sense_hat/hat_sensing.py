@@ -115,6 +115,7 @@ if __name__ == "__main__":
     client.loop_start()
     # Access the Rpi Hat for getting the sensors
     sense = SenseHat()
+    sense.low_light = True
     sense.clear()
     try:
         while True:
@@ -125,9 +126,9 @@ if __name__ == "__main__":
                 payload=json.dumps(meas)
             )
             LOGGER.info("Published data: %s", meas)
-            temp_msg = "Temp.: %d C"%(round(meas[0]["fields"]["temperature"], 1))
-            hum_msg = "Hum.: %d r.h."%(round(meas[0]["fields"]["humidity"], 1))
-            sense.show_message( temp_msg + "-" + hum_msg, scroll_speed=(0.03))
+            temp_msg = "Temp.: %s C"%(round(meas[0]["fields"]["temperature"], 1))
+            hum_msg = "Hum.: %s r.h."%(round(meas[0]["fields"]["humidity"], 1))
+            sense.show_message( temp_msg + "-" + hum_msg, scroll_speed=(0.04))
             sense.clear()
             time.sleep(1)
     except KeyboardInterrupt:
