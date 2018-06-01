@@ -30,8 +30,8 @@ Auth0Mosca.prototype.authenticateWithJWT = function(){
           client.deviceProfile = profile;
           return callback(null, true);
         });
-  }
-}
+  };
+};
 
 Auth0Mosca.prototype.authenticateWithCredentials = function(){
 
@@ -69,18 +69,19 @@ Auth0Mosca.prototype.authenticateWithCredentials = function(){
           return callback(null, true);
         });
     });
-  }
-}
+  };
+};
 
 Auth0Mosca.prototype.authorizePublish = function() {
   return function (client, topic, payload, callback) {
    callback(null, client.deviceProfile && client.deviceProfile.topics && client.deviceProfile.topics.indexOf(topic) > -1);
-  }
-}
+  };
+};
 
 Auth0Mosca.prototype.authorizeSubscribe = function() {
   return function(client, topic, callback) {
   callback(null, client.deviceProfile && client.deviceProfile.topics && client.deviceProfile.topics.indexOf(topic) > -1);
+};
 }
 
 module.exports = Auth0Mosca;
