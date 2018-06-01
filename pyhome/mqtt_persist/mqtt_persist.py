@@ -5,6 +5,7 @@ import os
 from influxdb import InfluxDBClient
 from threading import Timer
 import auth0_handlers as auth0
+import json
 
 # The callback for when the client receives a CONNACK response from the server.
 def on_connect(client, userdata, flags, rc):
@@ -21,8 +22,9 @@ def on_disconnect(client, userdata, rc):
 
 def on_message(client, userdata, message, db_client):
     logger = logging.getLogger()
-    logger.info("Got message: %s", message)
-    db_client.write_points([message.payload])
+    data =json.loads(message.payload)
+    logger.info("Got message: %s", data)
+    db_client.write_points(data)
     logger.info("Stored message in InfluxDB database")
 
 def connect_database():

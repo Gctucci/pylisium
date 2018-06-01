@@ -118,6 +118,7 @@ if __name__ == "__main__":
                 payload=json.dumps(meas),
                 qos=2
             )
+            LOGGER.info("Published data: %s", meas)
             time.sleep(1)
     except KeyboardInterrupt:
         print("Stopping script...")
