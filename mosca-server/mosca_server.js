@@ -25,7 +25,9 @@ var auth0 = new Auth0Mosca(
     process.env.AUTH0_URI,
     process.env.AUTH0_CLIENT_ID,
     process.env.AUTH0_CLIENT_SECRET,
-    'Devices'
+    'Devices',
+    process.env.AUTH0_AUDIENCE,
+    process.env.AUTH0_ISSUER
 );
 
 //Setup the Mosca server

@@ -5,11 +5,13 @@
 var request = require('request');
 var jwt = require('jsonwebtoken');
 
-function Auth0Mosca(auth0Namespace, clientId, clientSecret, connection) {
+function Auth0Mosca(auth0Namespace, clientId, clientSecret, connection, clientAudience, clientIssuer) {
     this.auth0Namespace = auth0Namespace;
     this.connection = connection;
     this.clientId = clientId;
     this.clientSecret = clientSecret;
+    this.clientAudience = clientAudience;
+    this.clientIssuer = clientIssuer;
 }
 
 Auth0Mosca.prototype.authenticateWithJWT = function () {
@@ -24,7 +26,11 @@ Auth0Mosca.prototype.authenticateWithJWT = function () {
 
         // console.log('Passsord:'+password);
 
-        jwt.verify(password, self.clientSecret, {
+        jwt.verify(
+            password.toString(),
+            self.clientSecret, {
+            audience: self.clientAudience,
+            issuer: self.clientIssuer,
             algorithms: ['HS256']
         }, function (err, profile) {
             if (err) {
