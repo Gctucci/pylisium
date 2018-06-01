@@ -128,7 +128,7 @@ if __name__ == "__main__":
             LOGGER.info("Published data: %s", meas)
             temp_msg = "Temp.: %s C"%(round(meas[0]["fields"]["temperature"], 1))
             hum_msg = "Hum.: %s r.h."%(round(meas[0]["fields"]["humidity"], 1))
-            sense.show_message( temp_msg + "-" + hum_msg, scroll_speed=(0.04))
+            sense.show_message( temp_msg + " - " + hum_msg, scroll_speed=(0.04))
             sense.clear()
             time.sleep(1)
     except KeyboardInterrupt:
