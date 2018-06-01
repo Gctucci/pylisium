@@ -81,7 +81,7 @@ def create_measurement():
         "temperature": float(weather["main"]["temp"]),
         "humidity": float(weather["main"]["humidity"]),
         "pressure": weather["main"]["pressure"],
-        "wind": float(weather["wind"]["speed"]),
+        "wind": weather["wind"]["speed"],
         "cloud": weather["clouds"]["all"],
         "city": weather["name"]
     }

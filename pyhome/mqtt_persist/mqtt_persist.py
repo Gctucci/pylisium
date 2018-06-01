@@ -50,6 +50,7 @@ def connect_database():
             True
         )
         logger.info("Created retention policy!")
+        client.drop_database('weather')
     except Exception as e:
         logger.error(e)
         logger.warning("Error while trying to connect to database.")
