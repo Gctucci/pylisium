@@ -52,7 +52,7 @@ def get_reading():
         "acceleration_z": acc["z"],
         "pitch": orient["pitch"],
         "roll": orient["roll"],
-        "yall": orient["yall"]
+        "yaw": orient["yaw"]
         }
 
 def create_measurement():
