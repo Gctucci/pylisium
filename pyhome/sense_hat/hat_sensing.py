@@ -42,6 +42,7 @@ def get_reading():
     temp_press = sense.get_temperature_from_pressure()
     temp_hum = sense.get_temperature_from_humidity()
     acc = sense.get_accelerometer_raw()
+    mag = sense.get_compass_raw()
     orient = sense.get_orientation()
     return {
         "pressure": pressure,
@@ -50,6 +51,9 @@ def get_reading():
         "acceleration_x": acc["x"],
         "acceleration_y": acc["y"],
         "acceleration_z": acc["z"],
+        "compass_x": mag["x"],
+        "compass_y": mag["y"],
+        "compass_z": mag["z"],
         "pitch": orient["pitch"],
         "roll": orient["roll"],
         "yaw": orient["yaw"]
