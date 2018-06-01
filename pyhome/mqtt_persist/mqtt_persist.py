@@ -14,15 +14,15 @@ def on_connect(client, userdata, flags, rc):
 
     # Subscribing in on_connect() means that if we lose the connection and
     # reconnect then subscriptions will be renewed.
-    client.subscribe("pylisium/home/environment/#", qos=2)
+    client.subscribe("pylisium/home/environment/#")
 
 def on_disconnect(client, userdata, rc):
     logger = logging.getLogger()
     logger.info("Successfully disconnected from Broker...")
 
-def on_message(client, userdata, message, db_client):
+def on_message(client, userdata, msg, db_client):
     logger = logging.getLogger()
-    data =json.loads(message.payload)
+    data =json.loads(msg.payload.decode('utf-8'))
     logger.info("Got message: %s", data)
     db_client.write_points(data)
     logger.info("Stored message in InfluxDB database")
@@ -81,15 +81,14 @@ if __name__ == "__main__":
     CLIENT_ID = str(uuid.uuid4().int)
     client = mqtt.Client(client_id=CLIENT_ID)
     client.on_connect = on_connect
-    client.on_message = lambda client, userdata, message: on_message(client, userdata, message, db_client)
+    client.on_message = lambda x, y, z: on_message(x, y, z, db_client)
     client.on_disconnect = on_disconnect
     client.enable_logger(LOGGER)
     token = get_auth_token()
     client.username_pw_set(username="JWT",password=os.environ.get("MQTT_ACCESS_TOKEN"))
     client.connect(
         os.environ.get('MQTT_BROKER_HOST'),
-        int(os.environ.get('MQTT_BROKER_PORT')),
-        60
+        int(os.environ.get('MQTT_BROKER_PORT'))
     )
     try:
         # Blocking call that processes network traffic, dispatches callbacks and
