@@ -63,7 +63,7 @@ def create_measurement():
                 "device_type": "sense_hat",
                 "device_id": os.environ.get("DEVICE_ID")
             },
-            "time": dt.utcnow().timestamp(),
+            "time": dt.utcnow().isoformat(),
             "fields": reading
         }
     ]
@@ -116,7 +116,7 @@ if __name__ == "__main__":
             auth = {"username": "JWT", "password": os.environ.get("MQTT_ACCESS_TOKEN")}
             meas = create_measurement()
             client.publish(
-                topic=topic,
+                topic=str(topic),
                 payload=json.dumps(meas)
             )
             LOGGER.info("Published data: %s", meas)

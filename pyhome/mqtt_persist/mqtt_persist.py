@@ -24,8 +24,12 @@ def on_message(client, userdata, msg, db_client):
     logger = logging.getLogger()
     data =json.loads(msg.payload.decode('utf-8'))
     logger.info("Got message: %s", data)
-    db_client.write_points(data)
-    logger.info("Stored message in InfluxDB database")
+    try:
+        db_client.write_points(data)
+        logger.info("Stored message in InfluxDB database")
+    except Exception as e:
+        logger.error(e)
+        logger.warning("Could not save datapoint to influxdb")
 
 def connect_database():
     logger = logging.getLogger()
