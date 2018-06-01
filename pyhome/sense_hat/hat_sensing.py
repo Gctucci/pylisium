@@ -9,6 +9,7 @@ from threading import Timer
 import os
 import auth0_handlers as auth0
 import json
+import threading
 
 def load_env(fname=".env", sep="=="):
     logger = logging.getLogger()
@@ -92,8 +93,17 @@ def get_auth_token():
         os.environ["MQTT_ACCESS_TOKEN"]  = "mqtt"
     return token
 
+def display_text(sense):
+    global TEMP, HUM
+    while True:
+        temp_msg = "T:%s"%(round(TEMP, 1))
+        hum_msg = "H:%s"%(round(HUM, 1))
+        sense.show_message( temp_msg + " - " + hum_msg, scroll_speed=(0.04))
+        sense.clear()
+        time.sleep(1)
 
 if __name__ == "__main__":
+    global TEMP, HUM
     load_env()
     # Initializes default python logger
     FORMAT = '[%(levelname)s] %(asctime)s - %(message)s'
@@ -117,21 +127,23 @@ if __name__ == "__main__":
     sense = SenseHat()
     sense.low_light = True
     sense.clear()
+    thread_display = threading.Thread(target=display_text, args=(sense, ) )
+    thread_display.start()
     try:
         while True:
             auth = {"username": "JWT", "password": os.environ.get("MQTT_ACCESS_TOKEN")}
             meas = create_measurement()
+            TEMP = meas[0]["fields"]["temperature"]
+            HUM = meas[0]["fields"]["humidity"]
             client.publish(
                 topic=str(topic),
                 payload=json.dumps(meas)
             )
             LOGGER.info("Published data: %s", meas)
-            temp_msg = "T:%s"%(round(meas[0]["fields"]["temperature"], 1))
-            hum_msg = "H:%s"%(round(meas[0]["fields"]["humidity"], 1))
-            sense.show_message( temp_msg + " - " + hum_msg, scroll_speed=(0.04))
-            sense.clear()
             time.sleep(1)
     except KeyboardInterrupt:
         print("Stopping script...")
+        sense.clear()
         client.loop_stop()
         client.disconnect()
+        thread_display.join()
