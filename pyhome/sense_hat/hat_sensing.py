@@ -41,14 +41,16 @@ def get_reading():
     temp_press = sense.get_temperature_from_pressure()
     temp_hum = sense.get_temperature_from_humidity()
     acc = sense.get_accelerometer_raw()
-    mag = sense.get_magnetometer_raw()
+    mag = sense.get_compass_raw()
     return {
         "pressure": pressure,
         "temperature": np.mean(temp_press, temp_hum),
         "acceleration_x": acc["x"],
         "acceleration_y": acc["y"],
         "acceleration_z": acc["z"],
-        "magnetic": mag
+        "compass_x": mag["x"],
+        "compass_y": mag["y"],
+        "compass_z": mag["z"]
         }
 
 def create_measurement():
