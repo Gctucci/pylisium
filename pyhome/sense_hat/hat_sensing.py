@@ -101,9 +101,10 @@ if __name__ == "__main__":
     client.on_connect = on_connect
     client.on_message = on_message
     client.on_disconnect = on_disconnect
+    client.enable_logger(LOGGER)
     token = get_auth_token()
     client.username_pw_set(username="JWT",password=os.environ.get("MQTT_ACCESS_TOKEN"))
-    client.connect(os.environ.get("MQTT_BROKER_HOST"), int(os.environ.get("MQTT_BROKER_PORT")), 60)
+    client.connect_async(os.environ.get("MQTT_BROKER_HOST"), int(os.environ.get("MQTT_BROKER_PORT")), 60)
     client.loop_start()
     # Access the Rpi Hat for getting the sensors
     sense = SenseHat()

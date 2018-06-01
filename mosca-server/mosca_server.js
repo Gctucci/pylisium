@@ -10,8 +10,7 @@ var settings = {
   backend: {
     type: 'redis',
     port: 6379,
-    host: 'redis',
-    return_buffers: true
+    host: 'redis'
   },
   persistence: {
     factory: mosca.persistence.Redis,

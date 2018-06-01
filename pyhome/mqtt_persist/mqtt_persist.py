@@ -81,6 +81,7 @@ if __name__ == "__main__":
     client.on_connect = on_connect
     client.on_message = lambda client, userdata, message: on_message(client, userdata, message, db_client)
     client.on_disconnect = on_disconnect
+    client.enable_logger(LOGGER)
     token = get_auth_token()
     client.username_pw_set(username="JWT",password=os.environ.get("MQTT_ACCESS_TOKEN"))
     client.connect(
