@@ -105,7 +105,7 @@ if __name__ == "__main__":
     token = get_auth_token()
     client.username_pw_set(username="JWT",password=os.environ.get("MQTT_ACCESS_TOKEN"))
     client.connect_async(os.environ.get("MQTT_BROKER_HOST"), int(os.environ.get("MQTT_BROKER_PORT")))
-    topic = "".join(["pylisium/home/environment/", client_id]),
+    topic = "".join(["pylisium/home/environment/", client_id])
     LOGGER.info("Start publishing on topic %s", topic)
     client.loop_start()
     # Access the Rpi Hat for getting the sensors

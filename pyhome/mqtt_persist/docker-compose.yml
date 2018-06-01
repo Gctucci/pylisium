@@ -35,6 +35,8 @@ services:
       - "3000:3000"
     networks:
       - grafana-net
+    volumes:
+      - grafana-data:/var/lib/grafana
     depends_on:
       - influxdb
       - web
@@ -46,3 +48,4 @@ networks:
       name: moscaserver_broker-net
 volumes:
   influxdb-data:
+  grafana-data:
