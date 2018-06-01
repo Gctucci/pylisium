@@ -96,7 +96,7 @@ if __name__ == "__main__":
     LOGGER = logging.getLogger()
     LOGGER.setLevel(logging.INFO)
     # Initializes the MQTT client
-    client_id = str(uuid.uuid4())
+    client_id = str(uuid.uuid4().int)
     client = mqtt.Client(client_id=client_id)
     client.on_connect = on_connect
     client.on_message = on_message
@@ -113,7 +113,7 @@ if __name__ == "__main__":
             auth = {"username": "JWT", "password": os.environ.get("MQTT_ACCESS_TOKEN")}
             meas = create_measurement()
             client.publish(
-                topic="pylisium/home/%s/environment"%(client_id),
+                topic="".join("pylisium/home/", client_id, "/environment"),
                 payload=json.dumps(meas),
                 qos=2
             )

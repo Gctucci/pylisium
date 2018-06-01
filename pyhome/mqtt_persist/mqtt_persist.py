@@ -70,7 +70,7 @@ if __name__ == "__main__":
     # Connects to the Influx Database
     db_client = connect_database()
     # Initializes the MQTT client
-    CLIENT_ID = str(uuid.uuid4())
+    CLIENT_ID = str(uuid.uuid4().int)
     client = mqtt.Client(client_id=CLIENT_ID)
     client.on_connect = on_connect
     client.on_message = lambda client, userdata, message: on_message(client, userdata, message, db_client)
