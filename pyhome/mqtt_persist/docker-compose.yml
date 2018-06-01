@@ -8,7 +8,7 @@ services:
       - "5000:5000"
     networks:
       - grafana-net
-      - broker-net
+      - my-broker-net
     depends_on:
       - influxdb
 
@@ -41,6 +41,8 @@ services:
 
 networks:
   grafana-net:
-  broker-net:
+  my-broker-net:
+    external:
+      name: broker-net
 volumes:
   influxdb-data:

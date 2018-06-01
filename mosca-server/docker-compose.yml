@@ -23,5 +23,6 @@ services:
       - broker-net
 networks:
   broker-net:
+    name: broker-net
 volumes:
   redis-data:
