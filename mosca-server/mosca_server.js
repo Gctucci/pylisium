@@ -36,7 +36,7 @@ var server = new mosca.Server(settings);
 //Wire up authentication & authorization to mosca
 server.authenticate = auth0.authenticateWithJWT();
 server.authorizePublish = auth0.authorizePublish();
-server.authorizeSubscribe = auth0.authorizeSubscribe();
+//server.authorizeSubscribe = auth0.authorizeSubscribe();
 
 server.on('ready', setup);
 

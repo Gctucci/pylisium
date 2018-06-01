@@ -100,11 +100,7 @@ Auth0Mosca.prototype.authorizePublish = function () {
 
 Auth0Mosca.prototype.authorizeSubscribe = function () {
     return function (client, topic, callback) {
-        if (client.deviceProfile !== undefined) {
-            callback(null, client.deviceProfile && client.deviceProfile.topics && client.deviceProfile.topics.indexOf(topic) > -1);
-        } else {
-            callback(null, true);
-        }
+        callback(null, true);
     };
 }
 
