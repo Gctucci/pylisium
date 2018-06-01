@@ -27,7 +27,7 @@ def on_connect(client, userdata, flags, rc):
 
     # Subscribing in on_connect() means that if we lose the connection and
     # reconnect then subscriptions will be renewed.
-    client.subscribe("pylisium/home/%s/control"%(client._client_id))
+    client.subscribe("".join("pylisium/home/", client._client_id.decode("utf-8"), "/control"))
 
 def on_disconnect(client, userdata, rc):
     logger = logging.getLogger()
