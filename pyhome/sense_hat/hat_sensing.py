@@ -118,7 +118,6 @@ if __name__ == "__main__":
     sense.clear()
     try:
         while True:
-            sense.clear()
             auth = {"username": "JWT", "password": os.environ.get("MQTT_ACCESS_TOKEN")}
             meas = create_measurement()
             client.publish(
@@ -126,9 +125,10 @@ if __name__ == "__main__":
                 payload=json.dumps(meas)
             )
             LOGGER.info("Published data: %s", meas)
-            temp_msg = "Temp.: %s C"%(round(meas["fields"]["temperature"]))
-            hum_msg = "\tHum.: %s \%"%(round(meas["fields"]["humidity"]))
+            temp_msg = "Temp.: %d C"%(round(meas[0]["fields"]["temperature"]))
+            hum_msg = "\tHum.: %d r.h."%(round(meas[0]["fields"]["humidity"]))
             sense.show_message( temp_msg + hum_msg)
+            sense.clear()
             time.sleep(1)
     except KeyboardInterrupt:
         print("Stopping script...")
