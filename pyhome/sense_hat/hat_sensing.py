@@ -30,7 +30,7 @@ def get_weather():
     # Find the lat and lon from ip
     g = geocoder.ip('me')
     coord = g.latlng
-    api_addr = os.environ.get('WEATHER_API') + "&lat=%s&lon=%s"%(coord[0], coord[1]) + "&units=metrics"
+    api_addr = os.environ.get('WEATHER_API') + "&lat=%s&lon=%s"%(coord[0], coord[1]) + "&units=metric"
     resp = requests.get(api_addr).json()
     logger.info("Got weather response: %s", resp)
     return resp
