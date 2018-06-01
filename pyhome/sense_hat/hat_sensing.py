@@ -8,6 +8,7 @@ from datetime import datetime as dt
 from threading import Timer
 import os
 import auth0_handlers as auth0
+import json
 
 def load_env(fname=".env", sep="=="):
     logger = logging.getLogger()
@@ -62,7 +63,7 @@ def create_measurement():
                 "device_type": "sense_hat",
                 "device_id": os.environ.get("DEVICE_ID")
             },
-            "time": dt.utcnow(),
+            "time": dt.utcnow().timestamp(),
             "fields": reading
         }
     ]
@@ -113,10 +114,8 @@ if __name__ == "__main__":
             meas = create_measurement()
             client.publish(
                 topic="pylisium/home/%s/environment"%(client_id),
-                payload=meas,
-                qos=2,
-                client_id=client_id,
-                auth=auth
+                payload=json.dumps(meas),
+                qos=2
             )
             time.sleep(1)
     except KeyboardInterrupt:

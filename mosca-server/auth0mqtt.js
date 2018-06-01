@@ -90,13 +90,21 @@ Auth0Mosca.prototype.authenticateWithCredentials = function () {
 
 Auth0Mosca.prototype.authorizePublish = function () {
     return function (client, topic, payload, callback) {
-        callback(null, client.deviceProfile && client.deviceProfile.topics && client.deviceProfile.topics.indexOf(topic) > -1);
+        if (client.deviceProfile !== undefined) {
+            callback(null, client.deviceProfile && client.deviceProfile.topics && client.deviceProfile.topics.indexOf(topic) > -1);
+        } else {
+            callback(null, topic.toString().indexOf(client.id.toString()) > -1);
+        }
     };
 };
 
 Auth0Mosca.prototype.authorizeSubscribe = function () {
     return function (client, topic, callback) {
-        callback(null, client.deviceProfile && client.deviceProfile.topics && client.deviceProfile.topics.indexOf(topic) > -1);
+        if (client.deviceProfile !== undefined) {
+            callback(null, client.deviceProfile && client.deviceProfile.topics && client.deviceProfile.topics.indexOf(topic) > -1);
+        } else {
+            callback(null, true);
+        }
     };
 }
 
