@@ -44,7 +44,7 @@ def get_reading():
     mag = sense.get_compass_raw()
     return {
         "pressure": pressure,
-        "temperature": np.mean(temp_press, temp_hum),
+        "temperature": float(temp_press + temp_hum) / 2,
         "acceleration_x": acc["x"],
         "acceleration_y": acc["y"],
         "acceleration_z": acc["z"],
