@@ -26,12 +26,15 @@ def load_env(fname=".env", sep="=="):
 def get_weather():
     import requests
     logger = logging.getLogger()
-    coord = os.environ.get['LOCATION'].strip(')').strip('(').split(',')
-    api_addr = os.environ.get('WEATHER_API') + "&lat=%s&lon=%s"%(coord[0], coord[1]) + "&units=metric"
-    try:
-        resp = requests.get(api_addr).json()
-        logger.info("Got weather response: %s", resp)
-    except Exception as e:
+    if os.environ.get('LOCATION') is not None:
+        coord = os.environ.get['LOCATION'].strip(')').strip('(').split(',')
+        api_addr = os.environ.get('WEATHER_API') + "&lat=%s&lon=%s"%(coord[0], coord[1]) + "&units=metric"
+        try:
+            resp = requests.get(api_addr).json()
+            logger.info("Got weather response: %s", resp)
+        except Exception as e:
+            resp = None
+    else:
         resp = None
     return resp
 
