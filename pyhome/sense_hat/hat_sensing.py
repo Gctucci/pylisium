@@ -25,11 +25,8 @@ def load_env(fname=".env", sep="=="):
 
 def get_weather():
     import requests
-    import geocoder
     logger = logging.getLogger()
-    # Find the lat and lon from ip
-    g = geocoder.ip('me')
-    coord = g.latlng
+    coord = os.environ.get['LOCATION'].strip(')').strip('(').split(',')
     api_addr = os.environ.get('WEATHER_API') + "&lat=%s&lon=%s"%(coord[0], coord[1]) + "&units=metric"
     try:
         resp = requests.get(api_addr).json()
@@ -37,6 +34,20 @@ def get_weather():
     except Exception as e:
         resp = None
     return resp
+
+def get_coordinates():
+    import geocoder
+    logger = logging.getLogger()
+    while True:
+        try:
+            # Find the lat and lon from ip
+            g = geocoder.ip('me')
+            coord = g.latlng
+            os.environ['LOCATION'] = coord
+        except Exception as e:
+            logger.error(e)
+            logger.warning("Could not retrieve Location...")
+        time.sleep(3600)
 
 # The callback for when the client receives a CONNACK response from the server.
 def on_connect(client, userdata, flags, rc):
@@ -80,7 +91,6 @@ def get_reading():
 def create_measurement():
     weather = get_weather()
     reading = get_reading()
-    
     meas = [
         {
             "measurement": "environment",
@@ -188,6 +198,8 @@ if __name__ == "__main__":
     sense.clear()
     thread_display = threading.Thread(target=display_text, args=(sense, ) )
     thread_mqtt = threading.Thread(target=send_data, args=(client, topic, ) )
+    thread_coord = threading.Thread(target=get_coordinates)
+    thread_coord.start()
     thread_display.start()
     thread_mqtt.start()
     try:
@@ -202,5 +214,6 @@ if __name__ == "__main__":
         sense.clear()
         client.loop_stop()
         client.disconnect()
+        thread_coord.join(timeout=5)
         thread_display.join(timeout=5)
         thread_mqtt.join(timeout=5)
