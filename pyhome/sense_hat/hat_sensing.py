@@ -31,8 +31,11 @@ def get_weather():
     g = geocoder.ip('me')
     coord = g.latlng
     api_addr = os.environ.get('WEATHER_API') + "&lat=%s&lon=%s"%(coord[0], coord[1]) + "&units=metric"
-    resp = requests.get(api_addr).json()
-    logger.info("Got weather response: %s", resp)
+    try:
+        resp = requests.get(api_addr).json()
+        logger.info("Got weather response: %s", resp)
+    except Exception as e:
+        resp = None
     return resp
 
 # The callback for when the client receives a CONNACK response from the server.
@@ -77,14 +80,7 @@ def get_reading():
 def create_measurement():
     weather = get_weather()
     reading = get_reading()
-    weather_data = {
-        "temperature": float(weather["main"]["temp"]),
-        "humidity": float(weather["main"]["humidity"]),
-        "pressure": float(weather["main"]["pressure"]),
-        "wind": float(weather["wind"]["speed"]),
-        "cloud": float(weather["clouds"]["all"]),
-        "city": weather["name"]
-    }
+    
     meas = [
         {
             "measurement": "environment",
@@ -94,17 +90,28 @@ def create_measurement():
             },
             "time": dt.utcnow().isoformat(),
             "fields": reading
-        },
-        {
-            "measurement": "weather",
-            "tags": {
-                "device_type": "sense_hat",
-                "device_id": os.environ.get("DEVICE_ID")
-            },
-            "time": dt.utcnow().isoformat(),
-            "fields": weather_data
         }
     ]
+    if weather is not None:
+        weather_data = {
+            "temperature": float(weather["main"]["temp"]),
+            "humidity": float(weather["main"]["humidity"]),
+            "pressure": float(weather["main"]["pressure"]),
+            "wind": float(weather["wind"]["speed"]),
+            "cloud": float(weather["clouds"]["all"]),
+            "city": weather["name"]
+        }
+        meas.append(
+            {
+                "measurement": "weather",
+                "tags": {
+                    "device_type": "sense_hat",
+                    "device_id": os.environ.get("DEVICE_ID")
+                },
+                "time": dt.utcnow().isoformat(),
+                "fields": weather_data
+            }
+        )
     return meas
 
 def get_auth_token():
